@@ -63,7 +63,7 @@ struct Line_Data* parse_line(const char* line){
 
         if(is_left)
         {
-            line_data->left[left_length] = currentChar;
+            line_data->left[left_length] = tolower(currentChar);
             left_length ++;
         }
         else{
