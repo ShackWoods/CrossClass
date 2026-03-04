@@ -2,9 +2,9 @@
 #define TOKEN_VISABILITY
 
 enum Visability {
-    PUBLIC,
-    PRIVATE,
-    INTERNAL
+    PUBLIC_VISABILITY,
+    PRIVATE_VISABILITY,
+    INTERNAL_VISABILITY
 };
 
 #endif
