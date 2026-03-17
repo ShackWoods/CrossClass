@@ -34,3 +34,12 @@ bool line_data_equality(const struct Line_Data *a, const struct Line_Data *b) {
 
     return true;
 }
+
+// Frees up the memory claimed by Line_Data
+void delete_data(struct Line_Data* data){
+    if (data) {
+        free(data->left);
+        free(data->right);
+    }
+    free(data);
+}

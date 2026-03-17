@@ -75,6 +75,8 @@ void test_read_ccd_file_handle_spaces() {
     printf("Indent: %d\n", lines->data->indentation);
     CU_ASSERT_PTR_NULL(lines->next);
 
+    delete_list(lines);
+
     fclose(file);
 }
 

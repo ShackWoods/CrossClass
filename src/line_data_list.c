@@ -51,14 +51,6 @@ struct Line_Data_Node* get_head_of_line_data_list(struct Line_Data_Node *list){
     return list;
 }
 
-void delete_data(struct Line_Data* data){
-    if (data) {
-        free(data->left);
-        free(data->right);
-    }
-    free(data);
-}
-
 void delete_list(struct Line_Data_Node* list){
     struct Line_Data_Node* current_head = get_head_of_line_data_list(list);
 

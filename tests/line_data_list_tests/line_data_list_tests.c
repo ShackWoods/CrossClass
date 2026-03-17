@@ -1,6 +1,7 @@
 #include "./line_data_list_tests.h"
 
 #include "../../src/line_data_list.h"
+#include "../../src/Data/line_data.h"
 #include <CUnit/Basic.h>
 #include <CUnit/CUError.h>
 #include <stdio.h>
@@ -31,6 +32,8 @@ void test_line_data_list_count_ahead(){
     CU_ASSERT(count_ahead(&head) == 2);
     CU_ASSERT(count_ahead(&middle) == 1);
     CU_ASSERT(count_ahead(&tail) == 0);
+
+    delete_list(&head);
 }
 
 void test_create_line_data_list() {
@@ -113,6 +116,10 @@ void test_line_data_node_equality(void) {
     CU_ASSERT_TRUE(line_data_node_equality(&a, &a));
     CU_ASSERT_TRUE(line_data_node_equality(NULL, NULL));
     CU_ASSERT_FALSE(line_data_node_equality(&a, NULL));
+
+    delete_data(a.data);
+    delete_data(b.data);
+    delete_data(c.data);
 }
 
 void add_line_data_list_tests(CU_pSuite test_suite) {

@@ -13,6 +13,10 @@ void test_line_data_equality() {
   CU_ASSERT_FALSE(line_data_equality(&a, &c));
   CU_ASSERT_TRUE(line_data_equality(NULL, NULL));
   CU_ASSERT_FALSE(line_data_equality(&a, NULL));
+
+  delete_data(a);
+  delete_data(b);
+  delete_data(c);
 }
 
 void add_line_data_tests(CU_pSuite test_suite) {
