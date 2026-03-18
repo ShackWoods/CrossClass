@@ -33,7 +33,7 @@ struct Line_Data* parse_line(const char* line){
     line_data->indentation = 0;
 
     bool is_left = true;
-    int length = 0; // length of the current section
+    int index = -1; // index of the newest character
     
     // Parse character by character
     for(int i=0; i<MAX_LINE_LENGTH; i++)
@@ -45,24 +45,36 @@ struct Line_Data* parse_line(const char* line){
             if(is_left){
                 error_invalid_line("Found end of line without finding ':'");
             }
-            line_data->right[length] = '\0';
+            if(index != -1){ // If right-side not empty
+                while(isspace(line_data->right[index])){ // Trim trailing whitespace
+                    index--;
+                }
+            }
+            index++;
+            line_data->right[index] = '\0';
             break;
         }
 
         // Handle swaps between left and right
         if(currentChar == ':'){
-            if(is_left){ //Store left_data and start parsing right
-                is_left = false;
-                line_data->left[length] = '\0';
-                length = 0;
-                continue;
+            if(!is_left){
+                error_invalid_line("Found ':' on right side of declaration");
             }
-            error_invalid_line("Found ':' on right side of declaration");
+            if(index == -1){
+                error_invalid_line("Left is empty");
+            }
+            is_left = false; //Store left_data and start parsing right
+            while(isspace(line_data->left[index])){ // Trim trailing whitespace
+                index--;
+            }
+            index++;
+            line_data->left[index] = '\0';
+            index = -1;
             continue;
         }
 
         // Handle indentation
-        if(isspace(currentChar) && length == 0){
+        if(isspace(currentChar) && index == -1){
             if(is_left){
                 line_data->indentation++;
             }
@@ -70,16 +82,17 @@ struct Line_Data* parse_line(const char* line){
         }
 
         // Store the character to line_data
+        index++;
         if(is_left)
         {
-            line_data->left[length] = tolower(currentChar);
+            line_data->left[index] = tolower(currentChar);
         }
         else{
-            line_data->right[length] = currentChar;
+            line_data->right[index] = currentChar;
         }
-        length++;
     }
 
+    // Handle whitespace at the end of the left/right section
     return line_data;
 }
 

@@ -104,6 +104,44 @@ void test_read_ccd_file_lowercase_left(){
     fclose(file);
 }
 
+void test_trailing_whitespace_is_trimmed(){
+    FILE* file = tmpfile();
+
+    fputs("nothing trailing:nothing trailing\n", file);
+    fputs("trailing left   :nothing trailing\n", file);
+    fputs("nothing trailing:trailing right  \n", file);
+    fputs("trailing left  :trailing right   \n", file);
+    fputs("empty right nothing trailing: \n", file);
+    fputs("empty right trailing left :    \n", file);
+
+    rewind(file);
+
+    struct Line_Data_Node* lines = read_ccd_file(file);
+
+    printf("Beginning asserts\n");
+    test_line(lines, "nothing trailing", "nothing trailing", 0);
+    lines = lines->next;
+
+    test_line(lines, "trailing left", "nothing trailing", 0);
+    lines = lines->next;
+
+    test_line(lines, "nothing trailing", "trailing right", 0);
+    lines = lines->next;
+
+    test_line(lines, "trailing left", "trailing right", 0);
+    lines = lines->next;
+    
+    test_line(lines, "empty right nothing trailing", "", 0);
+    lines = lines->next;
+
+    test_line(lines, "empty right trailing left", "", 0);
+    CU_ASSERT_PTR_NULL(lines->next);
+
+    delete_list(lines);
+
+    fclose(file);
+}
+
 void add_data_reader_tests(CU_pSuite test_suite) {
     CU_ADD_TEST(test_suite, test_read_ccd_file);
     CU_ADD_TEST(test_suite, test_read_ccd_file_handle_spaces);
