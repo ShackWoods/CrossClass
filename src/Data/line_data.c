@@ -2,8 +2,10 @@
 #include <string.h> 
 #include <stdlib.h> 
 
+// Compares two Line_Data structs for equality based on value
 bool line_data_equality(const struct Line_Data *a, const struct Line_Data *b) {
    
+    // Trivial cases
     if (a == b) {
         return true;
     }
@@ -12,6 +14,7 @@ bool line_data_equality(const struct Line_Data *a, const struct Line_Data *b) {
         return false;
     }
 
+    // Guard clauses for non-trivial cases
     if (a->indentation != b->indentation) {
         return false;
     }
@@ -30,4 +33,13 @@ bool line_data_equality(const struct Line_Data *a, const struct Line_Data *b) {
     }
 
     return true;
+}
+
+// Frees up the memory claimed by a Line_Data instance
+void delete_data(struct Line_Data* data){
+    if (data) {
+        free(data->left);
+        free(data->right);
+    }
+    free(data);
 }

@@ -2,8 +2,9 @@
 #define LINE_DATA
 
 #include <stdbool.h>
-#include "./Tokens/tokens.h"
+#include "./Tokens/tokens.h" // Included but unused
 
+// Defines what is stored about a single line
 struct Line_Data {
     int indentation;
     char* left;
@@ -12,6 +13,15 @@ struct Line_Data {
  
 // Compares two Line_Data structs for equality based on value
 bool line_data_equality(const struct Line_Data *a, const struct Line_Data *b);
+
+// Frees up the memory claimed by a Line_Data instance
+void delete_data(struct Line_Data* data){
+    if (data) {
+        free(data->left);
+        free(data->right);
+    }
+    free(data);
+}
 
 #endif
 
