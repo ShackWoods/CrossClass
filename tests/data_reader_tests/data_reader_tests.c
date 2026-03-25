@@ -146,4 +146,5 @@ void add_data_reader_tests(CU_pSuite test_suite) {
     CU_ADD_TEST(test_suite, test_read_ccd_file);
     CU_ADD_TEST(test_suite, test_read_ccd_file_handle_spaces);
     CU_ADD_TEST(test_suite, test_read_ccd_file_lowercase_left);
+    CU_ADD_TEST(test_suite, test_trailing_whitespace_is_trimmed);
 }
