@@ -2,6 +2,7 @@
 #include <string.h> 
 #include <stdlib.h> 
 
+// Compares two Line_Data structs for equality based on value
 bool line_data_equality(const struct Line_Data *a, const struct Line_Data *b) {
    
     if (a == b) {
@@ -30,4 +31,14 @@ bool line_data_equality(const struct Line_Data *a, const struct Line_Data *b) {
     }
 
     return true;
+}
+
+// Frees up the memory claimed by a Line_Data instance
+// WARNING: Don't use if left or right are string literals
+void delete_data(struct Line_Data* data){
+    if (data) {
+        free(data->left);
+        free(data->right);
+    }
+    free(data);
 }

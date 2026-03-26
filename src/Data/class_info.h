@@ -7,9 +7,10 @@
 #include "./Tokens/data_type.h"
 #include "./Tokens/visability.h"
 
+// Defines how equality is checked for objects
 struct Equality {
     enum EqualityType type;
-    char* (*excluded_fields)[];
+    char* (*excluded_fields)[]; // Fields to exclude from comparison
 };
 
 struct Class_Info {
