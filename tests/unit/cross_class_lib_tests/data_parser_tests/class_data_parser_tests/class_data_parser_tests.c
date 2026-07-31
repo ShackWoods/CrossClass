@@ -24,6 +24,19 @@ static struct Data_Parser_Result create_default_result() {
   return result;
 }
 
+static void append_line(struct Line_Data_Node **tail, char *left, char *right,
+                        int indentation) {
+  (*tail)->next = malloc(sizeof(typeof(*((*tail)->next))));
+  struct Line_Data_Node *new_line = (*tail)->next;
+  new_line->data = malloc(sizeof(typeof((*new_line->data))));
+  new_line->data->left = left;
+  new_line->data->right = right;
+  new_line->data->indentation = indentation;
+  new_line->next = NULL;
+  new_line->prev = *tail;
+  *tail = new_line;
+}
+
 void assert_parse_success(bool parsed,
                           const struct Data_Parser_Result *result) {
   CU_ASSERT(parsed == true);
@@ -54,7 +67,6 @@ void test_class_data_parser_no_details_returns_default_values() {
   CU_ASSERT(class_info->equality->type == EQUAL_BY_REFERENCE);
   CU_ASSERT_PTR_NULL(class_info->equality->excluded_fields);
   CU_ASSERT_PTR_NULL(class_info->fields);
-  CU_ASSERT(class_info->store_type == STORETYPE_NOT_SET);
   CU_ASSERT(class_info->visibility == VISIBILITY_NOT_SET);
 
   free(class_info);
@@ -128,33 +140,29 @@ void test_class_data_parser_fields_are_parsed() {
 
   struct Line_Data fields_line_data = {
       .indentation = 0, .left = "fields", .right = ""};
-  struct Line_Data field_line_data = {
-      .indentation = 4, .left = "field", .right = ""};
-  struct Line_Data field_name_line_data = {
-      .indentation = 8, .left = "name", .right = "id"};
-  struct Line_Data field_type_line_data = {
-      .indentation = 8, .left = "type", .right = "string"};
-  struct Line_Data field_visibility_line_data = {
-      .indentation = 8, .left = "visibility", .right = "public"};
 
-  struct Line_Data_Node line_data_list = {.data = &fields_line_data,
-                                          .prev = NULL};
-  line_data_list.next = malloc(sizeof(typeof(struct Line_Data_Node)));
-  line_data_list.next->data = &field_line_data;
-  line_data_list.next->next = malloc(sizeof(typeof(struct Line_Data_Node)));
-  line_data_list.next->next->data = &field_name_line_data;
-  line_data_list.next->next->next =
-      malloc(sizeof(typeof(struct Line_Data_Node)));
-  line_data_list.next->next->next->data = &field_type_line_data;
-  line_data_list.next->next->next->next =
-      malloc(sizeof(typeof(struct Line_Data_Node)));
-  line_data_list.next->next->next->next->data = &field_visibility_line_data;
-  line_data_list.next->next->next->next->next = NULL;
-  struct Field expectedField = {
-      .name = "id", .data_type = DATA_STRING, .visibility = VISIBILITY_PUBLIC};
+  struct Line_Data_Node *line_data_list =
+      malloc(sizeof(typeof(*line_data_list)));
+  line_data_list->data = &fields_line_data;
+  line_data_list->next = NULL;
+  line_data_list->prev = NULL;
+  append_line(&line_data_list, "field", "", 4);
+  append_line(&line_data_list, "name", "id", 8);
+  append_line(&line_data_list, "type", "string", 8);
+  append_line(&line_data_list, "visibility", "public", 8);
+  append_line(&line_data_list, "const", "false", 8);
+  append_line(&line_data_list, "store", "ref", 8);
+  while (line_data_list->prev != NULL) {
+    line_data_list = line_data_list->prev;
+  }
+  struct Field expectedField = {.name = "id",
+                                .data_type = DATA_STRING,
+                                .visibility = VISIBILITY_PUBLIC,
+                                .isConstant = false,
+                                .store_type = STORETYPE_STORE_BY_REFERENCE};
 
   // Act
-  bool parsed = try_parse_class_data(&line_data_list, &result, &version);
+  bool parsed = try_parse_class_data(line_data_list, &result, &version);
 
   // Assert
   assert_parse_success(parsed, &result);
@@ -168,10 +176,14 @@ void test_class_data_parser_fields_are_parsed() {
   CU_ASSERT(id_field->visibility == expectedField.visibility);
 
   // Cleanup
-  free(line_data_list.next->next->next->next);
-  free(line_data_list.next->next->next);
-  free(line_data_list.next->next);
-  free(line_data_list.next);
+  while (line_data_list->next != NULL) {
+    line_data_list = line_data_list->next;
+  }
+  while (line_data_list->prev != NULL) {
+    line_data_list = line_data_list->prev;
+    free(line_data_list->next);
+  }
+  free(line_data_list);
 }
 
 void add_class_data_parser_tests(CU_pSuite test_suite) {
