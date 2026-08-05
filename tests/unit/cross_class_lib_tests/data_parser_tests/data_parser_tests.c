@@ -101,7 +101,7 @@ void test_data_reader_version_extra_content_fails() {
 void test_data_reader_missing_type_fails() {
   FILE *test_file = tmpfile();
 
-  fputs("version:0.0.1", test_file);
+  fputs("version:0.0.1\n", test_file);
   fputs("Not a type: type", test_file);
   rewind(test_file);
 
@@ -119,7 +119,7 @@ void test_data_reader_missing_type_fails() {
 void test_data_reader_unsupported_type_fails() {
   FILE *test_file = tmpfile();
 
-  fputs("version:0.0.1", test_file);
+  fputs("version:0.0.1\n", test_file);
   fputs("type: unsupported", test_file);
   rewind(test_file);
 
@@ -134,6 +134,28 @@ void test_data_reader_unsupported_type_fails() {
   fclose(test_file);
 }
 
+void test_data_reader_success() {
+  FILE *test_file = tmpfile();
+
+  fputs("version:123.456.789\n", test_file);
+  fputs("type: class", test_file);
+  rewind(test_file);
+
+  struct Line_Data_Node *lines = read_ccd_file(test_file);
+  struct Data_Parser_Result *result = parse_line_data(lines);
+
+  CU_ASSERT_PTR_NOT_NULL(lines);
+  CU_ASSERT_PTR_NOT_NULL(result);
+  CU_ASSERT_PTR_NOT_NULL(result->result);
+  CU_ASSERT(result->is_error == false);
+  CU_ASSERT(result->error_message == NULL);
+
+  free(result);
+  delete_list(lines);
+
+  fclose(test_file);
+}
+
 void add_data_parser_tests(CU_pSuite test_suite) {
   CU_ADD_TEST(test_suite, test_data_reader_missing_version_fails);
   CU_ADD_TEST(test_suite, test_data_reader_version_not_first_fails);
@@ -141,6 +163,7 @@ void add_data_parser_tests(CU_pSuite test_suite) {
   CU_ADD_TEST(test_suite, test_data_reader_version_extra_content_fails);
   CU_ADD_TEST(test_suite, test_data_reader_missing_type_fails);
   CU_ADD_TEST(test_suite, test_data_reader_unsupported_type_fails);
+  CU_ADD_TEST(test_suite, test_data_reader_success);
 
   add_class_data_parser_tests(test_suite);
 }
