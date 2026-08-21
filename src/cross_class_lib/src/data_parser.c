@@ -78,6 +78,12 @@ struct Version *ensure_version(const struct Line_Data_Node *line) {
   version->minor = parts[1];
   version->patch = parts[2];
 
+  // Compare against a supported version list
+  if(!ensure_version_supported(version)){
+    printf("This version of CrossClass does not support this file\n");
+    return NULL;
+  }
+
   return version;
 }
 
