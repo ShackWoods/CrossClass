@@ -62,6 +62,7 @@ bool ensure_version_supported(struct Version *version) {
     printf("GOT VERSIONS\n");
     bool valid = false;
     while(supported_versions != NULL && !valid){
+      printf("%d, %d, %d\n", supported_versions->data->major, supported_versions->data->minor, supported_versions->data->patch);
         if(version->major == supported_versions->data->major &&
         version->minor == supported_versions->data->minor &&
         version->patch == supported_versions->data->patch){
