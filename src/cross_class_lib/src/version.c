@@ -42,7 +42,7 @@ struct Version_List *get_supported_versions(){
 }
 
 void delete_version_list(struct Version_List *list) {
-  printf("Begin deleting\n");
+  printf("Begin deleting - %d, %d, %d\n", list->data->major, list->data->minor, list->data->patch);
   while(list->prev != NULL){
     list = list->prev;
   }
@@ -73,6 +73,7 @@ bool ensure_version_supported(struct Version *version) {
 
   bool valid = false;
   while(supported_versions->prev != NULL && !valid){
+    printf("%d, %d, %d\n", supported_versions->data->major, supported_versions->data->minor, supported_versions->data->patch);
     if(version->major == supported_versions->data->major &&
       version->minor == supported_versions->data->minor &&
       version->patch == supported_versions->data->patch){
@@ -80,7 +81,8 @@ bool ensure_version_supported(struct Version *version) {
     }
     supported_versions = supported_versions->prev; // As we did not wind back
   }
-  // We haven't considered the head
+  printf("%d, %d, %d\n", supported_versions->data->major, supported_versions->data->minor, supported_versions->data->patch);
+  // We may not have considered the head
   if(version->major == supported_versions->data->major &&
     version->minor == supported_versions->data->minor &&
     version->patch == supported_versions->data->patch){
