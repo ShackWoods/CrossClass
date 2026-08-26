@@ -25,13 +25,13 @@ bool ensure_version_supported(struct Version *version) {
     }
 
     // Free up memory
-    delete_list(supported_versions);
+    delete_version_list(supported_versions);
 
     return valid;
 }
 
 // Auxiliary function to minimize space
-void extend_supported_versions(struct Version_List **tail, int major, int minor, int patch) {
+static void extend_supported_versions(struct Version_List **tail, int major, int minor, int patch) {
   (*tail)->next = malloc(sizeof(typeof(*((*tail)->next))));
   struct Version_List *new_version = (*tail)->next;
   new_version->data = malloc(sizeof(typeof((*new_version->data))));
@@ -43,7 +43,7 @@ void extend_supported_versions(struct Version_List **tail, int major, int minor,
   *tail = new_version;
 }
 
-struct Version_List *get_supported_versions(){
+static struct Version_List *get_supported_versions(){
     struct Version supported_version_data = get_current_version();
 
     struct Version_List *version_list =
@@ -58,7 +58,16 @@ struct Version_List *get_supported_versions(){
     return version_list;
 }
 
-void delete_list(struct Version_List *list) {
+static void delete_version_data(struct Version *data) {
+  if (data) {
+    free(data->major);
+    free(data->minor);
+    free(data->patch);
+  }
+  free(data);
+}
+
+static void delete_version_list(struct Version_List *list) {
   while(list->prev != NULL){
     list = list->prev;
   }
