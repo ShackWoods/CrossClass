@@ -42,14 +42,14 @@ struct Version_List *get_supported_versions(){
 }
 
 void delete_version_list(struct Version_List *list) {
-  printf("Begin deleting - %d, %d, %d\n", list->data->major, list->data->minor, list->data->patch);
+  printf("Begin deleting - %d, %d, %d\n", &list->data->major, &list->data->minor, &list->data->patch);
   while(list->prev != NULL){
     list = list->prev;
   }
-  printf("Reached head of list - %d, %d, %d\n", list->data->major, list->data->minor, list->data->patch);
+  printf("Reached head of list - %d, %d, %d\n", &list->data->major, &list->data->minor, &list->data->patch);
 
   while (list->next != NULL) {
-    printf("%d, %d, %d\n", list->data->major, list->data->minor, list->data->patch);
+    printf("%d, %d, %d\n", &list->data->major, &list->data->minor, &list->data->patch);
     free(list->data);
     printf("DELETED DATA\n");
     list = list->next;
@@ -57,7 +57,7 @@ void delete_version_list(struct Version_List *list) {
     printf("DELETED PRIOR NODE\n");
   }
 
-  printf("%d, %d, %d\n", list->data->major, list->data->minor, list->data->patch);
+  printf("%d, %d, %d\n", &list->data->major, &list->data->minor, &list->data->patch);
   free(list->data);
   printf("DELETED DATA\n");
   free(list);
@@ -73,7 +73,6 @@ bool ensure_version_supported(struct Version *version) {
 
   bool valid = false;
   while(supported_versions->prev != NULL && !valid){
-    printf("%d, %d, %d\n", supported_versions->data->major, supported_versions->data->minor, supported_versions->data->patch);
     if(version->major == supported_versions->data->major &&
       version->minor == supported_versions->data->minor &&
       version->patch == supported_versions->data->patch){
@@ -81,7 +80,6 @@ bool ensure_version_supported(struct Version *version) {
     }
     supported_versions = supported_versions->prev; // As we did not wind back
   }
-  printf("%d, %d, %d\n", supported_versions->data->major, supported_versions->data->minor, supported_versions->data->patch);
   // We may not have considered the head
   if(version->major == supported_versions->data->major &&
     version->minor == supported_versions->data->minor &&
