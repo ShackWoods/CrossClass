@@ -42,14 +42,14 @@ struct Version_List *get_supported_versions(){
 }
 
 void delete_version_list(struct Version_List *list) {
-  printf("Begin deleting - %d, %d, %d\n", &list->data->major, &list->data->minor, &list->data->patch);
+  printf("Begin deleting - %d, %d, %d\n", &(list->data->major), &(list->data->minor), &(list->data->patch));
   while(list->prev != NULL){
     list = list->prev;
   }
-  printf("Reached head of list - %d, %d, %d\n", &list->data->major, &list->data->minor, &list->data->patch);
+  printf("Reached head of list - %d, %d, %d\n", &(list->data->major), &(list->data->minor), &(list->data->patch));
 
   while (list->next != NULL) {
-    printf("%d, %d, %d\n", &list->data->major, &list->data->minor, &list->data->patch);
+    printf("%d, %d, %d\n", &(list->data->major), &(list->data->minor), &(list->data->patch));
     free(list->data);
     printf("DELETED DATA\n");
     list = list->next;
@@ -57,7 +57,7 @@ void delete_version_list(struct Version_List *list) {
     printf("DELETED PRIOR NODE\n");
   }
 
-  printf("%d, %d, %d\n", &list->data->major, &list->data->minor, &list->data->patch);
+  printf("%d, %d, %d\n", &(list->data->major), &(list->data->minor), &(list->data->patch));
   free(list->data);
   printf("DELETED DATA\n");
   free(list);
@@ -68,7 +68,7 @@ bool ensure_version_supported(struct Version *version) {
   struct Version_List *supported_versions = get_supported_versions();
 
   if(supported_versions == NULL){
-    return false; // ERROR
+    return false; // Error case/No versions are supported
   }
 
   bool valid = false;
