@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include <stdio.h>
+
 const struct Version CURRENT_VERSION = {
     .major = 0,
     .minor = 0,
@@ -55,20 +57,22 @@ void delete_version_list(struct Version_List *list) {
 }
 
 bool ensure_version_supported(struct Version *version) {
+    printf("ENTERED\n");
     struct Version_List *supported_versions = get_supported_versions();
-
+    printf("GOT VERSIONS\n");
     bool valid = false;
     while(supported_versions != NULL && !valid){
         if(version->major == supported_versions->data->major &&
         version->minor == supported_versions->data->minor &&
         version->patch == supported_versions->data->patch){
+            printf("FOUND\n");
             valid = true;
         }
         supported_versions = supported_versions->prev; // As we did not wind back
     }
-
+    printf("FINISHED CHECKING\n");
     // Free up memory
     delete_version_list(supported_versions);
-
+    printf("FINISHED DELETING\n");
     return valid;
 }
