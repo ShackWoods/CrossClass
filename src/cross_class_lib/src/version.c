@@ -44,8 +44,7 @@ void extend_supported_versions(struct Version_List **tail, int major, int minor,
 }
 
 struct Version_List *get_supported_versions(){
-    struct Version supported_version_data = {
-        .major = 0, .minor = 0, .patch = 0};
+    struct Version supported_version_data = get_current_version();
 
     struct Version_List *version_list =
         malloc(sizeof(typeof(*version_list)));
@@ -54,6 +53,7 @@ struct Version_List *get_supported_versions(){
     version_list->prev = NULL;
 
     // Just list out all accepted versions
+    // Note that tests must use one of these versions to pass
     extend_supported_versions(&version_list, 0, 0, 1);
     return version_list;
 }
