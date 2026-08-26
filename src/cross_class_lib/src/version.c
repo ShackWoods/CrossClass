@@ -46,7 +46,7 @@ void delete_version_list(struct Version_List *list) {
   while(list->prev != NULL){
     list = list->prev;
   }
-  printf("Reached head of list\n");
+  printf("Reached head of list - %d, %d, %d\n", list->data->major, list->data->minor, list->data->patch);
 
   while (list->next != NULL) {
     printf("%d, %d, %d\n", list->data->major, list->data->minor, list->data->patch);
