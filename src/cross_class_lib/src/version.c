@@ -42,38 +42,43 @@ struct Version_List *get_supported_versions(){
 }
 
 void delete_version_list(struct Version_List *list) {
+  printf("Begin deleting\n");
   while(list->prev != NULL){
     list = list->prev;
   }
+  printf("Reached head of list\n");
 
   while (list->next != NULL) {
+    printf("%d, %d, %d\n", list->data->major, list->data->minor, list->data->patch);
     free(list->data);
+    printf("DELETED DATA\n");
     list = list->next;
     free(list->prev);
+    printf("DELETED PRIOR NODE\n");
   }
 
+  printf("%d, %d, %d\n", list->data->major, list->data->minor, list->data->patch);
   free(list->data);
+  printf("DELETED DATA\n");
   free(list);
+  printf("DELETED PRIOR NODE\n");
 }
 
 bool ensure_version_supported(struct Version *version) {
-    printf("ENTERED\n");
     struct Version_List *supported_versions = get_supported_versions();
-    printf("GOT VERSIONS\n");
+
     bool valid = false;
     while(supported_versions != NULL && !valid){
-      printf("%d, %d, %d\n", supported_versions->data->major, supported_versions->data->minor, supported_versions->data->patch);
         if(version->major == supported_versions->data->major &&
         version->minor == supported_versions->data->minor &&
         version->patch == supported_versions->data->patch){
-            printf("FOUND\n");
             valid = true;
         }
         supported_versions = supported_versions->prev; // As we did not wind back
     }
-    printf("FINISHED CHECKING\n");
+
     // Free up memory
     delete_version_list(supported_versions);
-    printf("FINISHED DELETING\n");
+
     return valid;
 }
