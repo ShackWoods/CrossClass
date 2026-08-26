@@ -27,18 +27,18 @@ void extend_supported_versions(struct Version_List **tail, int major, int minor,
 }
 
 struct Version_List *get_supported_versions(){
-    struct Version supported_version_data = get_current_version();
+  struct Version supported_version_data = get_current_version();
 
-    struct Version_List *version_list =
-        malloc(sizeof(typeof(*version_list)));
-    version_list->data = &supported_version_data;
-    version_list->next = NULL;
-    version_list->prev = NULL;
+  struct Version_List *version_list =
+    malloc(sizeof(typeof(*version_list)));
+  version_list->data = &supported_version_data;
+  version_list->next = NULL;
+  version_list->prev = NULL;
 
-    // Just list out all accepted versions
-    // Note that tests must use one of these versions to pass
-    extend_supported_versions(&version_list, 0, 0, 1);
-    return version_list;
+  // Just list out all accepted versions
+  // Note that tests must use one of these versions to pass
+  extend_supported_versions(&version_list, 0, 0, 1);
+  return version_list;
 }
 
 void delete_version_list(struct Version_List *list) {
@@ -65,20 +65,30 @@ void delete_version_list(struct Version_List *list) {
 }
 
 bool ensure_version_supported(struct Version *version) {
-    struct Version_List *supported_versions = get_supported_versions();
+  struct Version_List *supported_versions = get_supported_versions();
 
-    bool valid = false;
-    while(supported_versions != NULL && !valid){
-        if(version->major == supported_versions->data->major &&
-        version->minor == supported_versions->data->minor &&
-        version->patch == supported_versions->data->patch){
-            valid = true;
-        }
-        supported_versions = supported_versions->prev; // As we did not wind back
+  if(supported_versions == NULL){
+    return false; // ERROR
+  }
+
+  bool valid = false;
+  while(supported_versions->prev != NULL && !valid){
+    if(version->major == supported_versions->data->major &&
+      version->minor == supported_versions->data->minor &&
+      version->patch == supported_versions->data->patch){
+      valid = true;
     }
+    supported_versions = supported_versions->prev; // As we did not wind back
+  }
+  // We haven't considered the head
+  if(version->major == supported_versions->data->major &&
+    version->minor == supported_versions->data->minor &&
+    version->patch == supported_versions->data->patch){
+    valid = true;
+  }
 
-    // Free up memory
-    delete_version_list(supported_versions);
+  // Free up memory
+  delete_version_list(supported_versions);
 
-    return valid;
+  return valid;
 }
