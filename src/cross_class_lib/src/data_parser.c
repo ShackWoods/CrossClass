@@ -73,16 +73,30 @@ struct Version *ensure_version(const struct Line_Data_Node *line) {
     return NULL;
   }
 
+  bool supported = true;
+  struct Version current_version = get_current_version();
+  if(parts[0] != current_version.major){ // Major version differences prevent backwards (or forwards) compatibility
+    supported = false;
+  }
+  else if(parts[1] < current_version.minor){  // Backwards compatibility
+    supported = true;
+  }
+  else if(parts[1] > current_version.minor){ // CrossClass is too old for this file
+    supported = false;
+  }
+  else if(parts[2] > current_version.patch){ // CrossClass is too old for this file
+    supported = false;
+  }
+  if(!supported){
+    printf("This version of CrossClass does not support this file\n");
+    return NULL;
+  }
+
+  // Version is valid, so create a struct
   struct Version *version = malloc(sizeof(typeof(*version)));
   version->major = parts[0];
   version->minor = parts[1];
   version->patch = parts[2];
-
-  // Compare against a supported version list
-  if(!ensure_version_supported(version)){
-    printf("This version of CrossClass does not support this file\n");
-    return NULL;
-  }
 
   return version;
 }
