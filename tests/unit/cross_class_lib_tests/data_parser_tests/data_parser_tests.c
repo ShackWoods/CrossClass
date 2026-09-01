@@ -135,7 +135,7 @@ void test_data_reader_version_well_formed_but_not_supported_fails() {
 void test_data_reader_missing_type_fails() {
   FILE *test_file = tmpfile();
 
-  fputs("version:0.0.0\n", test_file);
+  fputs("version:0.0.0\n", test_file); // Using development bypass
   fputs("Not a type: type", test_file);
   rewind(test_file);
 
@@ -153,7 +153,7 @@ void test_data_reader_missing_type_fails() {
 void test_data_reader_unsupported_type_fails() {
   FILE *test_file = tmpfile();
 
-  fputs("version:0.0.0\n", test_file); // Ensure this is a supported version
+  fputs("version:0.0.0\n", test_file); // Ensure this is a supported version - Using development bypass
   fputs("type: unsupported", test_file);
   rewind(test_file);
 
@@ -171,7 +171,7 @@ void test_data_reader_unsupported_type_fails() {
 void test_data_reader_success() {
   FILE *test_file = tmpfile();
 
-  fputs("version:0.0.0\n", test_file); // Ensure this is a supported version
+  fputs("version:0.0.0\n", test_file); // Ensure this is a supported version - Using development bypass
   fputs("type: class", test_file);
   rewind(test_file);
 

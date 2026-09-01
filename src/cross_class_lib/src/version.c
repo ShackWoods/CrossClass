@@ -13,13 +13,83 @@ const struct Version CURRENT_VERSION = {
 
 struct Version get_current_version() { return CURRENT_VERSION; }
 
-// Returns 1 is versionA is newer, -1 if versionB is newer, and 0 if they are identical
-int compare_version(struct Version *versionA, struct Version *versionB){
-    if(versionA->major > versionB->major){
-        return 1;
+// Auxiliary function to minimize space
+void extend_supported_versions(struct Version_List **tail, int major, int minor, int patch) {
+  (*tail)->next = malloc(sizeof(typeof(*((*tail)->next))));
+  struct Version_List *new_version = (*tail)->next;
+  new_version->data = malloc(sizeof(typeof((*new_version->data))));
+  new_version->data->major = major;
+  new_version->data->minor = minor;
+  new_version->data->patch = patch;
+  new_version->next = NULL;
+  new_version->prev = *tail;
+  *tail = new_version;
+}
+
+// Just list out all accepted versions, at most 1 per major version
+struct Version_List *get_supported_versions(){
+  struct Version supported_version_data = get_current_version();
+
+  struct Version_List *version_list =
+    malloc(sizeof(typeof(*version_list)));
+  version_list->data = &supported_version_data;
+  version_list->next = NULL;
+  version_list->prev = NULL;
+
+  extend_supported_versions(&version_list, 1, 0, 0); // Initial supporting version
+  return version_list;
+}
+
+bool ensure_version_supported(struct Version *version) {
+  // DEVELOPMENT BYPASS - WILL BE REMOVED ONCE STABLE VERSIONS ARE HERE
+  if(version->major == 0){
+    return true;
+  }
+
+  struct Version_List *supported_versions = get_supported_versions();
+
+  if(supported_versions == NULL){
+    return false; // Error case/No versions are supported
+  }
+
+  bool valid = false;
+  bool finished = false;
+  while(!finished){
+    if(version->major != supported_versions->data->major){
+      if(supported_versions->prev == NULL){
+        finished = true;
+      } else{
+        supported_versions = supported_versions->prev; // As we did not wind back
+      }
+      continue;
     }
-    if(versionA->major < versionB->major){
-        return -1;
+
+    // Major version matches, so ensure CrossClass version > file version
+    finished = true;
+    if(version->minor < supported_versions->data->minor){
+      valid = true;
     }
-    return 0;
+    else if(version->minor > supported_versions->data->minor){
+      valid = false;
+    }
+    else if(version->patch <= supported_versions->data->patch){
+      valid = true;
+    }
+    else{
+      valid = false;
+    }
+  }
+
+  // Finish winding back
+  while(supported_versions->prev != NULL){
+    supported_versions = supported_versions->prev;
+  }
+  // Free up memory
+  while(supported_versions->next != NULL){
+    supported_versions = supported_versions->next;
+    free(supported_versions->prev);
+  }
+  free(supported_versions);
+
+  return valid;
 }
